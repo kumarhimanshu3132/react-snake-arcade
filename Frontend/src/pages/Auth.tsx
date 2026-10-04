@@ -185,7 +185,7 @@ function Auth() {
       <div className="flex flex-col gap-8 justify-center items-center w-full max-w-6xl">
         {activeForm === 'register' ? (
           <div className="relative bg-gray-900/80 backdrop-blur-md border border-green-500/50 p-6 md:p-10 rounded-2xl w-full max-w-[95%] md:max-w-md shadow-[0_0_50px_rgba(34,197,94,0.3)] z-20 animate-[fadeIn_0.3s_ease-out]">
-            <h2 className="text-3xl md:text-4xl font-black text-transparent bg-clip-text mb-6 md:mb-8 text-center uppercase tracking-widest drop-shadow-md bg-gradient-to-r from-green-400 to-blue-500">
+            <h2 className="text-3xl md:text-4xl font-black text-transparent bg-clip-text mb-6 md:mb-8 text-center uppercase tracking-widest drop-shadow-md bg-linear-to-r from-green-400 to-blue-500">
               JOIN THE ARENA
             </h2>
 
@@ -240,7 +240,7 @@ function Auth() {
 
               <button
                 type="submit"
-                className="mt-4 w-full py-4 text-white font-black text-lg uppercase tracking-wider rounded-xl transition-all duration-300 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-400 hover:to-emerald-500 shadow-lg shadow-green-500/40 hover:scale-[1.02]"
+                className="mt-4 w-full py-4 text-white font-black text-lg uppercase tracking-wider rounded-xl transition-all duration-300 bg-linear-to-r from-green-500 to-emerald-600 hover:from-green-400 hover:to-emerald-500 shadow-lg shadow-green-500/40 hover:scale-[1.02]"
               >
                 {regStep === 1 ? 'SEND OTP' : regStep === 2 ? 'VERIFY' : 'CREATE ACCOUNT'}
               </button>
@@ -260,7 +260,7 @@ function Auth() {
           </div>
         ) : (
           <div className="relative bg-gray-900/80 backdrop-blur-md border border-blue-500/50 p-6 md:p-10 rounded-2xl w-full max-w-[95%] md:max-w-md shadow-[0_0_50px_rgba(59,130,246,0.3)] z-20 animate-[fadeIn_0.3s_ease-out]">
-            <h2 className="text-3xl md:text-4xl font-black text-transparent bg-clip-text mb-6 md:mb-8 text-center uppercase tracking-widest drop-shadow-md bg-gradient-to-r from-blue-400 to-indigo-500">
+            <h2 className="text-3xl md:text-4xl font-black text-transparent bg-clip-text mb-6 md:mb-8 text-center uppercase tracking-widest drop-shadow-md bg-linear-to-r from-blue-400 to-indigo-500">
               {resetStep === 0 ? 'WELCOME BACK' : 'RESET PASSWORD'}
             </h2>
 
@@ -326,7 +326,7 @@ function Auth() {
 
               <button
                 type="submit"
-                className="mt-4 w-full py-4 text-white font-black text-lg uppercase tracking-wider rounded-xl transition-all duration-300 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-400 hover:to-indigo-500 shadow-lg shadow-blue-500/40 hover:scale-[1.02]"
+                className="mt-4 w-full py-4 text-white font-black text-lg uppercase tracking-wider rounded-xl transition-all duration-300 bg-linear-to-r from-blue-500 to-indigo-600 hover:from-blue-400 hover:to-indigo-500 shadow-lg shadow-blue-500/40 hover:scale-[1.02]"
               >
                 {resetStep === 0 ? 'START PLAYING' : resetStep === 1 ? 'SEND OTP' : resetStep === 2 ? 'VERIFY' : 'RESET PASSWORD'}
               </button>
