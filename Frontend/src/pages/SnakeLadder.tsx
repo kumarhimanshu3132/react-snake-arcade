@@ -74,8 +74,8 @@ const SnakeLadder: React.FC = () => {
 
   const generateRandomBoard = () => {
     const template = BOARD_TEMPLATES[Math.floor(Math.random() * BOARD_TEMPLATES.length)];
-    setSnakes(template.snakes);
-    setLadders(template.ladders);
+    setSnakes(template.snakes as unknown as Record<number, number>);
+    setLadders(template.ladders as unknown as Record<number, number>);
   };
 
   useEffect(() => {
