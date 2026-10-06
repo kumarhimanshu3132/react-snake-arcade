@@ -18,23 +18,16 @@ function Auth() {
     }
   }, [toastMessage]);
 
-  // Login / Reset State
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
-  const [resetStep, setResetStep] = useState<0 | 1 | 2 | 3>(0);
-  const [resetOtp, setResetOtp] = useState("");
-  const [resetNewPassword, setResetNewPassword] = useState("");
+  const [resetStep, setResetStep] = useState<0 | 1>(0);
 
-  // Register State
-  const [regStep, setRegStep] = useState<1 | 2 | 3>(1);
   const [regName, setRegName] = useState("");
   const [regEmail, setRegEmail] = useState("");
-  const [regOtp, setRegOtp] = useState("");
   const [regPassword, setRegPassword] = useState("");
 
   const navigate = useNavigate();
 
-  // --- Login & Reset Flow ---
   const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (activeForm !== "login") return;
@@ -56,7 +49,6 @@ function Auth() {
           return;
         }
 
-        // Normal Login
         const response = await axios.post(
           "https://react-snake-arcade.onrender.com/api/auth/login",
           {
@@ -82,53 +74,16 @@ function Auth() {
           return;
         }
 
-        // Send OTP for reset
         const response = await axios.post(
-          "https://react-snake-arcade.onrender.com/api/auth/send-otp",
+          "https://react-snake-arcade.onrender.com/api/auth/forgot-password",
           {
             email: loginEmail,
-            isLogin: true,
           },
         );
         if (response.status === 200) {
-          toast.success(response.data.message);
-          setResetStep(2);
+          alert(`Your new password is: ${response.data.temporaryPassword}`);
+          setResetStep(0);
         }
-      } else if (resetStep === 2) {
-        if (!resetOtp.trim()) {
-          toast.error("OTP is required");
-          return;
-        }
-
-        // Verify OTP for reset
-        const response = await axios.post(
-          "https://react-snake-arcade.onrender.com/api/auth/verify-otp",
-          {
-            email: loginEmail,
-            otp: resetOtp,
-          },
-        );
-        if (response.status === 200) {
-          toast.success(response.data.message);
-          setResetStep(3);
-        }
-      } else if (resetStep === 3) {
-        if (!resetNewPassword.trim()) {
-          toast.error("New password is required");
-          return;
-        }
-
-        // Reset Password
-        const response = await axios.post(
-          "https://react-snake-arcade.onrender.com/api/auth/reset-password",
-          {
-            email: loginEmail,
-            newPassword: resetNewPassword,
-          },
-        );
-        toast.success(response.data.message);
-        setResetStep(0);
-        setLoginPassword("");
       }
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
@@ -139,88 +94,52 @@ function Auth() {
     }
   };
 
-  // --- Register Flow ---
   const handleRegisterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (activeForm !== "register") return;
 
     try {
-      if (regStep === 1) {
-        if (!regName.trim()) {
-          toast.error("Name is required");
-          return;
-        }
-        const nameRegex = /^[A-Za-z]+( [A-Za-z]+)* ?$/;
-        if (!nameRegex.test(regName)) {
-          toast.error("Name can only contain letters and a single space");
-          return;
-        }
-
-        if (!regEmail.trim()) {
-          toast.error("Email is required");
-          return;
-        }
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(regEmail)) {
-          toast.error("Please enter a valid email address");
-          return;
-        }
-
-        // Send OTP
-        const response = await axios.post(
-          "https://react-snake-arcade.onrender.com/api/auth/send-otp",
-          {
-            email: regEmail,
-            isLogin: false,
-          },
-        );
-        if (response.status === 200) {
-          toast.success(response.data.message);
-          setRegStep(2);
-        }
-      } else if (regStep === 2) {
-        if (!regOtp.trim()) {
-          toast.error("OTP is required");
-          return;
-        }
-
-        // Verify OTP
-        const response = await axios.post(
-          "https://react-snake-arcade.onrender.com/api/auth/verify-otp",
-          {
-            email: regEmail,
-            otp: regOtp,
-          },
-        );
-        if (response.status === 200) {
-          toast.success(response.data.message);
-          setRegStep(3);
-        }
-      } else if (regStep === 3) {
-        if (!regPassword.trim()) {
-          toast.error("Password is required");
-          return;
-        }
-
-        // Create Account
-        const response = await axios.post(
-          "https://react-snake-arcade.onrender.com/api/auth/register",
-          {
-            name: regName,
-            email: regEmail,
-            password: regPassword,
-          },
-        );
-        if (response.status === 200 || response.status === 201) {
-          setToastMessage("Registration successful! Please sign in.");
-          setRegStep(1);
-          setRegName("");
-          setRegEmail("");
-          setRegOtp("");
-          setRegPassword("");
-          setActiveForm("login");
-        }
+      if (!regName.trim()) {
+        toast.error("Name is required");
+        return;
       }
+      const nameRegex = /^[A-Za-z]+( [A-Za-z]+)* ?$/;
+      if (!nameRegex.test(regName)) {
+        toast.error("Name can only contain letters and a single space");
+        return;
+      }
+
+      if (!regEmail.trim()) {
+        toast.error("Email is required");
+        return;
+      }
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(regEmail)) {
+        toast.error("Please enter a valid email address");
+        return;
+      }
+
+      if (!regPassword.trim()) {
+        toast.error("Password is required");
+        return;
+      }
+
+      const response = await axios.post(
+        "https://react-snake-arcade.onrender.com/api/auth/register",
+        {
+          name: regName,
+          email: regEmail,
+          password: regPassword,
+        },
+      );
+      if (response.status === 200 || response.status === 201) {
+        setToastMessage("Registration successful! Please sign in.");
+        setRegName("");
+        setRegEmail("");
+        setRegPassword("");
+        setActiveForm("login");
+      }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       toast.error(
         error.response?.data?.error ||
@@ -258,73 +177,39 @@ function Auth() {
               noValidate
               className="flex flex-col gap-6"
             >
-              {regStep === 1 && (
-                <div className="flex flex-col gap-6 animate-[fadeIn_0.3s_ease-out]">
-                  <input
-                    type="text"
-                    placeholder="Player Name"
-                    value={regName}
-                    onChange={(e) => setRegName(e.target.value)}
-                    className="w-full p-4 bg-gray-800/80 text-white rounded-xl focus:outline-none border transition-all duration-300 ease-in-out placeholder-gray-400 focus:ring-2 focus:ring-green-500/50 border-gray-500 focus:border-green-500"
-                    required
-                  />
-                  <input
-                    type="email"
-                    placeholder="Player Email"
-                    value={regEmail}
-                    onChange={(e) => setRegEmail(e.target.value)}
-                    className="w-full p-4 bg-gray-800/80 text-white rounded-xl focus:outline-none border transition-all duration-300 ease-in-out placeholder-gray-400 focus:ring-2 focus:ring-green-500/50 border-gray-500 focus:border-green-500"
-                    required
-                  />
-                </div>
-              )}
-
-              {regStep === 2 && (
-                <div className="animate-[fadeIn_0.3s_ease-out]">
-                  <input
-                    type="text"
-                    placeholder="6-Digit OTP"
-                    value={regOtp}
-                    onChange={(e) => setRegOtp(e.target.value)}
-                    maxLength={6}
-                    className="w-full p-4 bg-gray-800/80 text-white rounded-xl focus:outline-none border transition-all duration-300 ease-in-out placeholder-gray-400 focus:ring-2 focus:ring-green-500/50 border-gray-500 focus:border-green-500"
-                    required
-                  />
-                </div>
-              )}
-
-              {regStep === 3 && (
-                <div className="animate-[fadeIn_0.3s_ease-out]">
-                  <input
-                    type="password"
-                    placeholder="Secret Password"
-                    value={regPassword}
-                    onChange={(e) => setRegPassword(e.target.value)}
-                    className="w-full p-4 bg-gray-800/80 text-white rounded-xl focus:outline-none border transition-all duration-300 ease-in-out placeholder-gray-400 focus:ring-2 focus:ring-green-500/50 border-gray-500 focus:border-green-500"
-                    required
-                  />
-                </div>
-              )}
+              <div className="flex flex-col gap-6 animate-[fadeIn_0.3s_ease-out]">
+                <input
+                  type="text"
+                  placeholder="Player Name"
+                  value={regName}
+                  onChange={(e) => setRegName(e.target.value)}
+                  className="w-full p-4 bg-gray-800/80 text-white rounded-xl focus:outline-none border transition-all duration-300 ease-in-out placeholder-gray-400 focus:ring-2 focus:ring-green-500/50 border-gray-500 focus:border-green-500"
+                  required
+                />
+                <input
+                  type="email"
+                  placeholder="Player Email"
+                  value={regEmail}
+                  onChange={(e) => setRegEmail(e.target.value)}
+                  className="w-full p-4 bg-gray-800/80 text-white rounded-xl focus:outline-none border transition-all duration-300 ease-in-out placeholder-gray-400 focus:ring-2 focus:ring-green-500/50 border-gray-500 focus:border-green-500"
+                  required
+                />
+                <input
+                  type="password"
+                  placeholder="Secret Password"
+                  value={regPassword}
+                  onChange={(e) => setRegPassword(e.target.value)}
+                  className="w-full p-4 bg-gray-800/80 text-white rounded-xl focus:outline-none border transition-all duration-300 ease-in-out placeholder-gray-400 focus:ring-2 focus:ring-green-500/50 border-gray-500 focus:border-green-500"
+                  required
+                />
+              </div>
 
               <button
                 type="submit"
                 className="mt-4 w-full py-4 text-white font-black text-lg uppercase tracking-wider rounded-xl transition-all duration-300 bg-linear-to-r from-green-500 to-emerald-600 hover:from-green-400 hover:to-emerald-500 shadow-lg shadow-green-500/40 hover:scale-[1.02]"
               >
-                {regStep === 1
-                  ? "SEND OTP"
-                  : regStep === 2
-                    ? "VERIFY"
-                    : "CREATE ACCOUNT"}
+                CREATE ACCOUNT
               </button>
-
-              {regStep !== 1 && (
-                <p
-                  className="text-center text-sm text-green-400 hover:text-green-300 cursor-pointer transition-colors"
-                  onClick={() => setRegStep(1)}
-                >
-                  &larr; Back to start
-                </p>
-              )}
             </form>
 
             <div className="mt-8 text-center">
@@ -379,44 +264,13 @@ function Auth() {
                 </div>
               )}
 
-              {resetStep === 2 && (
-                <div className="animate-[fadeIn_0.3s_ease-out]">
-                  <input
-                    type="text"
-                    placeholder="6-Digit OTP"
-                    value={resetOtp}
-                    onChange={(e) => setResetOtp(e.target.value)}
-                    maxLength={6}
-                    className="w-full p-4 bg-gray-800/80 text-white rounded-xl focus:outline-none border transition-all duration-300 ease-in-out placeholder-gray-400 focus:ring-2 focus:ring-blue-500/50 border-gray-500 focus:border-blue-500"
-                    required
-                  />
-                </div>
-              )}
-
-              {resetStep === 3 && (
-                <div className="animate-[fadeIn_0.3s_ease-out]">
-                  <input
-                    type="password"
-                    placeholder="New Secret Password"
-                    value={resetNewPassword}
-                    onChange={(e) => setResetNewPassword(e.target.value)}
-                    className="w-full p-4 bg-gray-800/80 text-white rounded-xl focus:outline-none border transition-all duration-300 ease-in-out placeholder-gray-400 focus:ring-2 focus:ring-blue-500/50 border-gray-500 focus:border-blue-500"
-                    required
-                  />
-                </div>
-              )}
-
               <button
                 type="submit"
                 className="mt-4 w-full py-4 text-white font-black text-lg uppercase tracking-wider rounded-xl transition-all duration-300 bg-linear-to-r from-blue-500 to-indigo-600 hover:from-blue-400 hover:to-indigo-500 shadow-lg shadow-blue-500/40 hover:scale-[1.02]"
               >
                 {resetStep === 0
                   ? "START PLAYING"
-                  : resetStep === 1
-                    ? "SEND OTP"
-                    : resetStep === 2
-                      ? "VERIFY"
-                      : "RESET PASSWORD"}
+                  : "GET TEMPORARY PASSWORD"}
               </button>
 
               {resetStep !== 0 && (
